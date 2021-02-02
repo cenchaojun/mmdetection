@@ -6,6 +6,7 @@ _base_ = [
 model = dict(
     type='FCOS',
     pretrained='open-mmlab://detectron/resnet50_caffe',
+    # pretrained=None,
     backbone=dict(
         type='ResNet',
         depth=50,
@@ -21,12 +22,12 @@ model = dict(
         out_channels=256,
         start_level=1,
         add_extra_convs=True,
-        extra_convs_on_inputs=False,  # use P5
+        extra_convs_on_inputs=True,  # use P5
         num_outs=5,
         relu_before_extra_convs=True),
     bbox_head=dict(
         type='FCOSHead',
-        num_classes=80,
+        num_classes=1,
         in_channels=256,
         stacked_convs=4,
         feat_channels=256,
@@ -54,7 +55,7 @@ train_cfg = dict(
 test_cfg = dict(
     nms_pre=1000,
     min_bbox_size=0,
-    score_thr=0.05,
+    score_thr=0.3,
     nms=dict(type='nms', iou_threshold=0.5),
     max_per_img=100)
 img_norm_cfg = dict(
@@ -62,10 +63,8 @@ img_norm_cfg = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
-    dict(type='RandomFlip', flip_ratio=0.5),
+    dict(type='Resize', img_scale=(1024, 1024), keep_ratio=True),
     dict(type='Normalize', **img_norm_cfg),
-    dict(type='Pad', size_divisor=32),
     dict(type='DefaultFormatBundle'),
     dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels']),
 ]
@@ -73,26 +72,37 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(1333, 800),
+        img_scale=(1024, 1024),
         flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True),
-            dict(type='RandomFlip'),
             dict(type='Normalize', **img_norm_cfg),
-            dict(type='Pad', size_divisor=32),
             dict(type='ImageToTensor', keys=['img']),
             dict(type='Collect', keys=['img']),
         ])
 ]
-data = dict(
-    samples_per_gpu=4,
-    workers_per_gpu=4,
-    train=dict(pipeline=train_pipeline),
-    val=dict(pipeline=test_pipeline),
-    test=dict(pipeline=test_pipeline))
+val_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='MultiScaleFlipAug',
+        img_scale=(1024, 1024),
+        flip=False,
+        transforms=[
+            dict(type='Resize', keep_ratio=True),
+            dict(type='Normalize', **img_norm_cfg),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='Collect', keys=['img']),
+        ])
+]
+# data = dict(
+#     samples_per_gpu=4,
+#     workers_per_gpu=1,
+#     train=dict(pipeline=train_pipeline),
+#     val=dict(pipeline=val_pipeline),
+#     test=dict(pipeline=test_pipeline))
 # optimizer
 optimizer = dict(
-    lr=0.01, paramwise_cfg=dict(bias_lr_mult=2., bias_decay_mult=0.))
+    lr=0.001, paramwise_cfg=dict(bias_lr_mult=2., bias_decay_mult=0.))
 optimizer_config = dict(
     _delete_=True, grad_clip=dict(max_norm=35, norm_type=2))
 # learning policy
@@ -102,4 +112,4 @@ lr_config = dict(
     warmup_iters=500,
     warmup_ratio=1.0 / 3,
     step=[8, 11])
-total_epochs = 12
+total_epochs = 50

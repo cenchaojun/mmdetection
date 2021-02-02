@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# @Time    : 2021/2/2 上午11:37
+# @Time    : 2020/12/15 下午9:19
 # @Author  : cenchaojun
-# @File    : backup.py
+# @File    : new_voc.py
 # @Software: PyCharm
 dataset_type = 'VOCDataset'
 data_root = 'data/VOCdevkit/'
@@ -11,7 +11,7 @@ img_norm_cfg = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='Resize', img_scale=(600, 600), keep_ratio=True),
+    dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='Pad', size_divisor=32),
@@ -22,7 +22,7 @@ test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(600, 600),
+        img_scale=(1333, 800),
         flip=False,
         transforms=[
             dict(type='Resize', keep_ratio=True),
@@ -31,33 +31,24 @@ test_pipeline = [
             dict(type='Pad', size_divisor=32),
             dict(type='ImageToTensor', keys=['img']),
             dict(type='Collect', keys=['img']),
-            ])
+        ])
 ]
 data = dict(
-    samples_per_gpu=4,
-    workers_per_gpu=1,
+    samples_per_gpu=2,
+    workers_per_gpu=2,
     train=dict(
-         type='RepeatDataset',
-         times=1,
-        dataset=dict(
-            type=dataset_type,
-            ann_file=[
-                # data_root + 'VOC2007/ImageSets/Main/trainval.txt',
-                data_root + 'VOC2007/ImageSets/Main/train.txt'
-            ],
-            # img_prefix=[data_root + 'VOC2007/', data_root + 'VOC2012/'],
-            img_prefix=data_root + 'VOC2007/',
-
-            pipeline=train_pipeline)),
+        type=dataset_type,
+        ann_file=data_root + 'VOC2012/ImageSets/Main/train.txt',
+        img_prefix=data_root + 'VOC2012/',
+        pipeline=train_pipeline),
     val=dict(
         type=dataset_type,
-        ann_file=data_root + 'VOC2007/ImageSets/Main/val.txt',
-        img_prefix=data_root + 'VOC2007/',
+        ann_file=data_root + 'VOC2012/ImageSets/Main/val.txt',
+        img_prefix=data_root + 'VOC2012/',
         pipeline=test_pipeline),
     test=dict(
         type=dataset_type,
-        ann_file=data_root + 'VOC2007/ImageSets/Main/test.txt',
-        img_prefix=data_root + 'VOC2007/',
+        ann_file=data_root + 'VOC2012/ImageSets/Main/test.txt',
+        img_prefix=data_root + 'VOC2012/',
         pipeline=test_pipeline))
-evaluation = dict(interval=1, metric='mAP')
-
+evaluation = dict(interval=1, metric='bbox')

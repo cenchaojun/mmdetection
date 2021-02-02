@@ -79,6 +79,10 @@ class TwoStageDetector(BaseDetector):
 
     def extract_feat(self, img):
         """Directly extract features from the backbone+neck."""
+        # x_backbone = self.backbone(img)
+        # if self.with_neck:
+        #     x_fpn = self.neck(x_backbone)
+        # return x_backbone, x_fpn
         x = self.backbone(img)
         if self.with_neck:
             x = self.neck(x)
@@ -197,6 +201,17 @@ class TwoStageDetector(BaseDetector):
 
         return self.roi_head.simple_test(
             x, proposal_list, img_metas, rescale=rescale)
+        # assert self.with_bbox, 'Bbox head must be implemented.'
+        #
+        # x_backbone, x_fpn = self.extract_feat(img)
+        #
+        # if proposals is None:
+        #     proposal_list = self.rpn_head.simple_test_rpn(x_fpn, img_metas)
+        # else:
+        #     proposal_list = proposals
+        #
+        # return self.roi_head.simple_test(
+        #     x_fpn, proposal_list, img_metas, rescale=rescale), x_backbone, x_fpn
 
     def aug_test(self, imgs, img_metas, rescale=False):
         """Test with augmentations.

@@ -118,7 +118,10 @@ def inference_detector(model, img):
         # just get the actual data from DataContainer
         data['img_metas'] = data['img_metas'][0].data
 
-    # forward the model
+    # # forward the model
+    # with torch.no_grad():
+    #     result, x_backbone, x_fpn = model(return_loss=False, rescale=True, **data)
+    # return result, x_backbone, x_fpn
     with torch.no_grad():
         result = model(return_loss=False, rescale=True, **data)[0]
     return result

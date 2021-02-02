@@ -1,5 +1,7 @@
 # model settings
 input_size = 300
+dataset_type = 'VOCDataset'
+data_root = 'data/VOCdevkit/'
 model = dict(
     type='SingleStageDetector',
     pretrained='open-mmlab://vgg16_caffe',
@@ -16,7 +18,7 @@ model = dict(
     bbox_head=dict(
         type='SSDHead',
         in_channels=(512, 1024, 512, 256, 256, 256),
-        num_classes=80,
+        num_classes=1,
         anchor_generator=dict(
             type='SSDAnchorGenerator',
             scale_major=False,
@@ -45,5 +47,5 @@ train_cfg = dict(
 test_cfg = dict(
     nms=dict(type='nms', iou_threshold=0.45),
     min_bbox_size=0,
-    score_thr=0.02,
+    score_thr=0.5,
     max_per_img=200)

@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2020/12/16 上午9:34
+# @Author  : cenchaojun
+# @File    : tassel.py
+# @Software: PyCharm
 from collections import OrderedDict
 
 from mmdet.core import eval_map, eval_recalls
@@ -8,12 +14,12 @@ from .xml_style import XMLDataset
 @DATASETS.register_module()
 class VOCDataset(XMLDataset):
 
-    CLASSES = ('maize tassel',)
+    CLASSES = ('tassel',)
 
     def __init__(self, **kwargs):
         super(VOCDataset, self).__init__(**kwargs)
-        if 'VOC2007' in self.img_prefix:
-            self.year = 2007
+        if 'Henan2020' in self.img_prefix:
+            self.year = 2020
         elif 'VOC2012' in self.img_prefix:
             self.year = 2012
         else:
@@ -58,8 +64,8 @@ class VOCDataset(XMLDataset):
         eval_results = OrderedDict()
         if metric == 'mAP':
             assert isinstance(iou_thr, float)
-            if self.year == 2007:
-                ds_name = 'voc07'
+            if self.year == 2020:
+                ds_name = 'Henan20'
             else:
                 ds_name = self.CLASSES
             mean_ap, _ = eval_map(
