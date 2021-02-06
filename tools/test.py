@@ -14,8 +14,11 @@ from mmdet.apis import multi_gpu_test, single_gpu_test
 from mmdet.datasets import (build_dataloader, build_dataset,
                             replace_ImageToTensor)
 from mmdet.models import build_detector
-
-
+# ../configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py work_dirs/faster_rcnn_r50_fpn_1x_no_val_coco/epoch_25.pth --out work_dirs/faster_rcnn_r50_fpn_1x_no_val_coco/faster_rcnn_r50_fpn_1x_no_val_coco_result.pkl --eval mAP
+# ../configs/faster_rcnn/faster_rcnn_r101_fpn_1x_coco.py work_dirs/faster_rcnn_r50_fpn_1x_no_val_coco/epoch_25.pth --out work_dirs/faster_rcnn_r50_fpn_1x_no_val_coco/faster_rcnn_r50_fpn_1x_no_val_coco_result.pkl --eval mAP
+# ../configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py work_dirs/faster_rcnn_r50_fpn_1x_no_val_coco/epoch_25.pth --out work_dirs/faster_rcnn_r50_fpn_1x_no_val_coco/faster_rcnn_r50_fpn_1x_no_val_coco_result.pkl --eval mAP
+# python3 tools/test.py configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py work_dirs/faster_rcnn_r50_fpn_1x_coco/epoch_50.pth --out work_dirs/faster_rcnn_r50_fpn_1x_coco/faster_r50_fpn_1x_coco_result.pkl --eval mAP
+# python3 tools/test.py ../configs/faster_rcnn/faster_rcnn_r50_fpn_1x_coco.py ./tools/work_dirs/faster_rcnn_r50_fpn_1x_no_val_coco/epoch_25.pth --out ./tools/work_dirs/faster_rcnn_r50_fpn_1x_no_val_coco/faster_rcnn_r50_fpn_1x_no_val_coco_result.pkl --eval mAP
 def parse_args():
     parser = argparse.ArgumentParser(
         description='MMDet test (and eval) a model')
@@ -201,7 +204,10 @@ def main():
             ]:
                 eval_kwargs.pop(key, None)
             eval_kwargs.update(dict(metric=args.eval, **kwargs))
-            print(dataset.evaluate(outputs, **eval_kwargs))
+            total_result = dataset.evaluate(outputs, **eval_kwargs)
+            print(total_result)
+            # print(dataset.evaluate(outputs, **eval_kwargs))
+            # total_result = dataset.evaluate(outputs, **eval_kwargs)
 
 
 if __name__ == '__main__':
